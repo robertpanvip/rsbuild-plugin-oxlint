@@ -22,10 +22,10 @@ Add plugin to your `rsbuild.config.ts`:
 
 ```ts
 // rsbuild.config.ts
-import { oxlintPlugin } from 'rsbuild-plugin-oxlint';
+import { linterPlugin } from 'rsbuild-plugin-oxlint';
 
 export default {
-  plugins: [oxlintPlugin({})],
+  plugins: [linterPlugin({})],
 };
 ```
 

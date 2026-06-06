@@ -142,7 +142,7 @@ const buildArgs = (options: Options): string[] => {
   return args;
 };
 
-export const oxlintPlugin = (options: Options = {}) => ({
+export const linterPlugin = (options: Options = {}) => ({
   setup(api: RsbuildPluginAPI) {
     lintPlugin({
       path: options.path,
@@ -155,4 +155,4 @@ export const oxlintPlugin = (options: Options = {}) => ({
   },
   name: 'oxlint-plugin',
 });
-export default oxlintPlugin;
+export default linterPlugin;

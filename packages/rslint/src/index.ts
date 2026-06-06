@@ -118,7 +118,7 @@ const buildArgs = (options: Options): string[] => {
   return args;
 };
 
-export const rslintPlugin = (options: Options = {}) => ({
+export const linterPlugin = (options: Options = {}) => ({
   setup(api: RsbuildPluginAPI) {
     lintPlugin({
       path: options.path,
@@ -131,4 +131,4 @@ export const rslintPlugin = (options: Options = {}) => ({
   },
   name: 'rslint-plugin',
 });
-export default rslintPlugin;
+export default linterPlugin;
