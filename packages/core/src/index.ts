@@ -224,7 +224,7 @@ export const lintPlugin = (options: LintOptions) => ({
         }
 
         const lastResult = (lastCompilation?.errors ?? []).filter(
-          (item) => !item.message.trimStart().startsWith('× [oxlint]'),
+          (item) => !item.message.trimStart().startsWith(`× [${executeName}]`),
         );
 
         const issues = [

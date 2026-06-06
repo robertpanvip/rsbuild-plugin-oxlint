@@ -5,84 +5,70 @@ import lintPlugin from 'rsbuild-plugin-lint';
 
 export interface Options {
   path?: string;
-  ignorePattern?: string | string[];
   configFile?: string;
-  deny?: string[];
-  allow?: string[];
-  warn?: string[];
-  params?: string;
-  oxlintPath?: string;
-  format?:
-    | 'default'
-    | 'checkstyle'
-    | 'github'
-    | 'gitlab'
-    | 'json'
-    | 'junit'
-    | 'stylish'
-    | 'unix';
+  rslintPath?: string;
+
   quiet?: boolean;
   fix?: boolean;
   failOnError?: boolean;
   failOnWarning?: boolean;
   lintOnStart?: boolean;
   lintOnHotUpdate?: boolean;
-  devServer?: boolean;
+
+  typeCheck?: boolean;
+  maxWarnings?: boolean;
+  rule?: string;
+  noColor?: boolean;
+  forceColor?: boolean;
 }
 
-type SpanItem = {
-  offset: number;
-  length: number;
+const parse = (output: string): Issue[] => {
+  const lines = output.split('\n').filter(Boolean);
+  return lines.map((line: string) => {
+    try {
+      return JSON.parse(line);
+    } catch (e) {
+      return {
+        message: line,
+      };
+    }
+  });
+};
+
+export type Start = {
   line: number;
   column: number;
 };
 
-type Label = {
-  label: string;
-  span: SpanItem;
+export type End = {
+  line: number;
+  column: number;
 };
 
-type LintError = {
-  name: string;
+export type Range = {
+  start: Start;
+  end: End;
+};
+
+export type Issue = {
+  ruleName: string;
   message: string;
-  code: string;
+  filePath: string;
+  range: Range;
   severity: string;
-  causes: unknown[];
-  url: string;
-  help: string;
-  filename: string;
-  labels: Label[];
-  related: unknown[];
-};
-
-
-const parseJsonOutput = (output: string): LintError[] => {
-  try {
-    const json = JSON.parse(output);
-    if (json && typeof json === 'object' && Array.isArray(json.diagnostics)) {
-      return json.diagnostics;
-    }
-    if (Array.isArray(json)) {
-      return json;
-    }
-  } catch {
-    // ignore parse errors
-  }
-  return [];
 };
 
 const formatter = (output: string) => {
-  const issues= parseJsonOutput(output);
+  const issues = parse(output);
   return issues.map((item) => ({
     ...item,
     severity: item.severity,
-    name: item.code,
+    name: item.ruleName,
     message: item.message,
-    file: item.filename,
-    loc: {
-      start: item.labels[0]?.span,
-      end: item.labels[0]?.span,
-    },
+    file: item.filePath,
+    loc: item.range,
+    code: item.ruleName,
+    help: '',
   }));
 };
 
@@ -91,16 +77,14 @@ const resolveAbsolutePath = (p: string): string =>
 
 const buildArgs = (options: Options): string[] => {
   const {
-    ignorePattern,
-    configFile = 'oxlintrc.json',
-    deny = [],
-    allow = [],
-    warn = [],
-    params = '',
-    format = '',
+    configFile = '',
     quiet = false,
     fix = false,
-    failOnWarning = false,
+    typeCheck = true,
+    maxWarnings,
+    rule,
+    noColor,
+    forceColor,
   } = options;
   const args: string[] = [];
   if (quiet) {
@@ -109,50 +93,42 @@ const buildArgs = (options: Options): string[] => {
   if (fix) {
     args.push('--fix');
   }
-  if (format) {
-    args.push('--format', format);
+  if (typeCheck) {
+    args.push('--type-check');
   }
-  if (failOnWarning) {
-    args.push('--deny-warnings');
+  if (maxWarnings) {
+    args.push('--max-warnings');
   }
-  const patterns = Array.isArray(ignorePattern)
-    ? ignorePattern
-    : ignorePattern
-      ? [ignorePattern]
-      : [];
-  patterns.forEach((pattern) => {
-    args.push(`--ignore-pattern=${pattern}`);
-  });
-  deny.forEach((d) => {
-    args.push('-D', d);
-  });
-  allow.forEach((a) => {
-    args.push('-A', a);
-  });
-  warn.forEach((w) => {
-    args.push('-W', w);
-  });
-  const configFilePath = resolveAbsolutePath(configFile);
-  if (existsSync(configFilePath)) {
-    args.push('-c', configFilePath);
+  if (rule) {
+    args.push('--rule');
   }
-  if (params) {
-    args.push(...params.split(' ').filter(Boolean));
+  if (noColor) {
+    args.push('--no-color');
   }
+  if (forceColor) {
+    args.push('--force-color');
+  }
+  if (configFile) {
+    const configFilePath = resolveAbsolutePath(configFile);
+    if (existsSync(configFilePath)) {
+      args.push('-config', configFilePath);
+    }
+  }
+  args.push('.');
   return args;
 };
 
-export const oxlintPlugin = (options: Options = {}) => ({
+export const rslintPlugin = (options: Options = {}) => ({
   setup(api: RsbuildPluginAPI) {
     lintPlugin({
       path: options.path,
       shouldFail: options.failOnError || options.failOnWarning,
-      args: [...buildArgs(options), '--format', 'json'],
-      lintPath: options.oxlintPath,
-      executeName: 'oxlint',
+      args: [...buildArgs(options), '--format', 'jsonline'],
+      lintPath: options.rslintPath,
+      executeName: 'rslint',
       formatter,
     }).setup(api);
   },
-  name: 'oxlint-plugin',
+  name: 'rslint-plugin',
 });
-export default oxlintPlugin;
+export default rslintPlugin;
