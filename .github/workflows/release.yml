@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -30,21 +32,40 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build
-        run: pnpm -r build
+      - name: Detect Changed Packages
+        id: changed
+        run: |
+          git fetch origin main
+          CHANGED=$(git diff --name-only origin/main...HEAD | grep -E '^packages/([^/]+)' | sed 's|packages/||' | cut -d'/' -f1 | sort -u | tr '\n' ' ' | tr -d ' ')
+          echo "changed_packages=$CHANGED" >> $GITHUB_OUTPUT
+          echo "Changed packages: $CHANGED"
 
-      - name: Create Release Pull Request or Publish to npm
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          publish: pnpm ci:publish
-          version: pnpm ci:version
-          commit: 'chore: release packages'
-          title: 'chore: release packages'
+      - name: Build Changed Packages
+        if: steps.changed.outputs.changed_packages != ''
+        run: |
+          for pkg in ${{ steps.changed.outputs.changed_packages }}; do
+            echo "Building package: $pkg"
+            pnpm --filter "rsbuild-plugin-$pkg" build
+          done
+
+      - name: Publish Changed Packages
+        if: steps.changed.outputs.changed_packages != ''
+        run: |
+          for pkg in ${{ steps.changed.outputs.changed_packages }}; do
+            echo "Publishing package: $pkg"
+            cd packages/$pkg
+            npm version patch --no-git-tag-version
+            npm publish --access public
+            cd ../..
+          done
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Send notification if published
-        if: steps.changesets.outputs.published == 'true'
-        run: echo "Published to npm!"
+      - name: Commit and Push Version Changes
+        if: steps.changed.outputs.changed_packages != ''
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add packages/*/package.json
+          git commit -m "chore: bump package versions" || echo "No changes to commit"
+          git push

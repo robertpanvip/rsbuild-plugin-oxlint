@@ -204,9 +204,11 @@ export const lintPlugin = (options: LintOptions) => ({
         };
       }
     });
+
     api.onAfterDevCompile(() => {
       debouncedRun();
     });
+
     api.onAfterStartDevServer(async () => {
       const { lintOnStart = true } = options;
       if (lintOnStart) {
@@ -214,6 +216,6 @@ export const lintPlugin = (options: LintOptions) => ({
       }
     });
   },
-  name: 'lint-plugin',
+  name: 'linter-plugin',
 });
 export default lintPlugin;
