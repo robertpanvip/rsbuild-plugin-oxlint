@@ -35,8 +35,11 @@ jobs:
       - name: Detect Changed Packages
         id: changed
         run: |
-          git fetch origin main
-          CHANGED=$(git diff --name-only origin/main...HEAD | grep -E '^packages/([^/]+)' | sed 's|packages/||' | cut -d'/' -f1 | sort -u | tr '\n' ' ' | tr -d ' ')
+          if [ $(git rev-list --count HEAD) -eq 1 ]; then
+            CHANGED=$(ls packages/ | tr '\n' ' ')
+          else
+            CHANGED=$(git diff --name-only HEAD~1 HEAD | grep -E '^packages/([^/]+)' | sed 's|packages/||' | cut -d'/' -f1 | sort -u | tr '\n' ' ' | tr -d ' ')
+          fi
           echo "changed_packages=$CHANGED" >> $GITHUB_OUTPUT
           echo "Changed packages: $CHANGED"
 
@@ -45,7 +48,7 @@ jobs:
         run: |
           for pkg in ${{ steps.changed.outputs.changed_packages }}; do
             echo "Building package: $pkg"
-            pnpm --filter "rsbuild-plugin-$pkg" build
+            pnpm --filter ./packages/$pkg build
           done
 
       - name: Publish Changed Packages
@@ -69,3 +72,7 @@ jobs:
           git add packages/*/package.json
           git commit -m "chore: bump package versions" || echo "No changes to commit"
           git push
+
+      - name: Skip - No Changes
+        if: steps.changed.outputs.changed_packages == ''
+        run: echo "No package changes detected, skipping release"

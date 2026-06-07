@@ -42,7 +42,11 @@ jobs:
             CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -E '^packages/([^/]+)' | sed 's|packages/||' | cut -d'/' -f1 | sort -u | tr '\n' ' ' | tr -d ' ')
           else
             # Push: compare with previous commit
-            CHANGED=$(git diff --name-only HEAD~1 HEAD | grep -E '^packages/([^/]+)' | sed 's|packages/||' | cut -d'/' -f1 | sort -u | tr '\n' ' ' | tr -d ' ')
+            if [ $(git rev-list --count HEAD) -eq 1 ]; then
+              CHANGED=$(ls packages/ | tr '\n' ' ')
+            else
+              CHANGED=$(git diff --name-only HEAD~1 HEAD | grep -E '^packages/([^/]+)' | sed 's|packages/||' | cut -d'/' -f1 | sort -u | tr '\n' ' ' | tr -d ' ')
+            fi
           fi
           echo "changed_packages=$CHANGED" >> $GITHUB_OUTPUT
           echo "Changed packages: $CHANGED"
@@ -52,7 +56,7 @@ jobs:
         run: |
           for pkg in ${{ steps.changed.outputs.changed_packages }}; do
             echo "Building package: $pkg"
-            pnpm --filter "rsbuild-plugin-$pkg" build
+            pnpm --filter ./packages/$pkg build
           done
 
       - name: Test Changed Packages
@@ -60,7 +64,7 @@ jobs:
         run: |
           for pkg in ${{ steps.changed.outputs.changed_packages }}; do
             echo "Testing package: $pkg"
-            pnpm --filter "rsbuild-plugin-$pkg" test || true
+            pnpm --filter ./packages/$pkg test || true
           done
 
       - name: Lint Changed Packages
@@ -68,7 +72,7 @@ jobs:
         run: |
           for pkg in ${{ steps.changed.outputs.changed_packages }}; do
             echo "Linting package: $pkg"
-            pnpm --filter "rsbuild-plugin-$pkg" lint || true
+            pnpm --filter ./packages/$pkg lint || true
           done
 
       - name: Skip - No Changes
