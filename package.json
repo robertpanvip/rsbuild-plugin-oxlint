@@ -2,6 +2,7 @@
   "name": "rsbuild-plugin-lint",
   "version": "1.0.0",
   "description": "rsbuild-plugin-lint",
+  "private": true,
   "workspaces": [
     "./packages/*"
   ],
@@ -14,7 +15,18 @@
     "url": "https://github.com/robertpanvip/rsbuild-plugin-lint/issues"
   },
   "author": "pan",
-  "license": "ISC",
-  "dependencies": {
-  }
+  "license": "MIT",
+  "scripts": {
+    "build": "pnpm -r --filter='./packages/*' build",
+    "test": "pnpm -r --filter='./packages/*' test",
+    "lint": "pnpm -r --filter='./packages/*' lint",
+    "changeset": "changeset",
+    "ci:version": "changeset version",
+    "ci:publish": "changeset publish",
+    "release": "pnpm build && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.7"
+  },
+  "packageManager": "pnpm@9.0.0"
 }

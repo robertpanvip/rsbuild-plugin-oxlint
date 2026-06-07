@@ -45,6 +45,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "@biomejs/biome": "latest"
+    "@biomejs/biome": "latest",
+    "rsbuild-plugin-lint": "latest"
   }
 }

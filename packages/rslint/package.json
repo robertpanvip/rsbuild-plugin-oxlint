@@ -45,6 +45,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "@rslint/core": "latest"
+    "@rslint/core": "latest",
+    "rsbuild-plugin-lint": "latest"
   }
 }
