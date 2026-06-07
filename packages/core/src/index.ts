@@ -195,7 +195,7 @@ export const lintPlugin = (options: LintOptions) => ({
           });
         }
       };
-      
+
       if (Array.isArray(setup)) {
         config.server.setup = [_setup, ...setup];
       } else {

@@ -1,13 +1,15 @@
+import { Rspack } from "@rsbuild/core";
 import { builtinModules } from 'node:module';
 import { sep } from 'node:path';
 import { stripVTControlCharacters as stripAnsi } from 'node:util';
-import type { StatsError } from '@rspack/core';
 import {
   color,
   type Logger,
 } from 'rslog';
 
 const LAZY_COMPILATION_IDENTIFIER = 'lazy-compilation-proxy';
+
+type StatsError = Rspack.StatsError;
 
 export const isVerbose = (targetLogger: Pick<Logger, 'level'>): boolean =>
   targetLogger.level === 'verbose';
@@ -30,7 +32,7 @@ export const removeLoaderChainDelimiter = (
 
 export const formatFileName = (
   fileName: string,
-  stats: StatsError,
+  stats: Rspack.StatsError,
   root: string,
 ) => {
   // File name may be empty when the error is not related to a file.
@@ -119,7 +121,7 @@ function formatModuleTrace(
 
   const moduleNames = stats.moduleTrace
     .map(
-      (trace) =>
+      (trace: { originName?: string }) =>
         trace.originName &&
         removeLoaderChainDelimiter(trace.originName, logger),
     )
