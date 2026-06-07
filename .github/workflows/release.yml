@@ -30,7 +30,7 @@ jobs:
           version: 9
 
       - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Detect Changed Packages
         id: changed
@@ -55,7 +55,7 @@ jobs:
             echo "Publishing package: $pkg"
             cd packages/$pkg
             npm version patch --no-git-tag-version
-            npm publish --access public
+            npm publish --access public --registry https://registry.npmjs.org/
             cd ../..
           done
         env:

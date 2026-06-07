@@ -215,6 +215,7 @@ export const lintPlugin = (options: LintOptions) => ({
         await runLint();
       }
     });
+
   },
   name: 'linter-plugin',
 });

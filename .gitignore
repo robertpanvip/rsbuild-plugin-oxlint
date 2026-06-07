@@ -25,8 +25,3 @@ pnpm-lock.yaml
 
 # Test
 coverage/
-
-# Changeset
-.changeset/*.md
-!.changeset/README.md
-!.changeset/config.json
