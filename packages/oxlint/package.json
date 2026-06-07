@@ -1,8 +1,19 @@
 {
   "name": "rsbuild-plugin-oxlint",
   "version": "0.1.2",
-  "repository": "https://github.com/robertpanvip/rsbuild-plugin-lint.git",
+  "author": "pan",
   "license": "MIT",
+  "description": "Oxlint plugin for Rsbuild",
+  "keywords": ["rsbuild", "plugin", "oxlint", "lint"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/robertpanvip/rsbuild-plugin-lint.git",
+    "directory": "packages/oxlint"
+  },
+  "bugs": {
+    "url": "https://github.com/robertpanvip/rsbuild-plugin-lint/issues"
+  },
+  "homepage": "https://github.com/robertpanvip/rsbuild-plugin-lint",
   "type": "module",
   "exports": {
     ".": {

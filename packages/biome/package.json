@@ -1,8 +1,19 @@
 {
   "name": "rsbuild-plugin-biome",
   "version": "0.1.1",
-  "repository": "https://github.com/robertpanvip/rsbuild-plugin-lint.git",
+  "author": "pan",
   "license": "MIT",
+  "description": "Biome lint plugin for Rsbuild",
+  "keywords": ["rsbuild", "plugin", "biome", "lint"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/robertpanvip/rsbuild-plugin-lint.git",
+    "directory": "packages/biome"
+  },
+  "bugs": {
+    "url": "https://github.com/robertpanvip/rsbuild-plugin-lint/issues"
+  },
+  "homepage": "https://github.com/robertpanvip/rsbuild-plugin-lint",
   "type": "module",
   "exports": {
     ".": {

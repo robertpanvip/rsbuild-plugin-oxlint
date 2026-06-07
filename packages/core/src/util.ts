@@ -96,6 +96,7 @@ const runChild = ({
       shell: false,
       stdio: 'pipe',
     });
+
     const emit = (data: Buffer, log: (s: string) => void) => {
       const trimmed = data.toString().trimEnd();
       if (!trimmed) {
@@ -107,6 +108,7 @@ const runChild = ({
         log(trimmed);
       }
     };
+
     child.stdout?.on('data', (d) => emit(d, (s) => logger.info(s)));
     child.stderr?.on('data', (d) => emit(d, (s) => logger.error(s)));
     child.on('error', (error) => {
@@ -117,6 +119,7 @@ const runChild = ({
       logger.error(`${executeName} Error: ${error.message}`);
       reject(error);
     });
+    
     child.on('exit', (code) => {
       const output = bufferedOutput.join('\n');
       if (code === 0) {

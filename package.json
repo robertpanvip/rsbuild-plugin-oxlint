@@ -1,21 +1,21 @@
 {
-  "name": "rsbuild-plugin-lint",
+  "name": "rsbuild-plugin-lint-monorepo",
   "version": "1.0.0",
-  "description": "rsbuild-plugin-lint",
   "private": true,
+  "description": "Collection of Rsbuild lint plugins",
+  "author": "pan",
+  "license": "MIT",
   "workspaces": [
     "./packages/*"
   ],
-  "homepage": "https://github.com/robertpanvip/rsbuild-plugin-lint.git",
+  "homepage": "https://github.com/robertpanvip/rsbuild-plugin-lint",
   "repository": {
     "type": "git",
-    "url": "https://github.com/robertpanvip/rsbuild-plugin-lint.git"
+    "url": "git+https://github.com/robertpanvip/rsbuild-plugin-lint.git"
   },
   "bugs": {
     "url": "https://github.com/robertpanvip/rsbuild-plugin-lint/issues"
   },
-  "author": "pan",
-  "license": "MIT",
   "scripts": {
     "build": "pnpm -r --filter='./packages/*' build",
     "test": "pnpm -r --filter='./packages/*' test",

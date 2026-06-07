@@ -62,7 +62,7 @@ jobs:
             cd ../..
           done
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Commit and Push Version Changes
         if: steps.changed.outputs.changed_packages != ''

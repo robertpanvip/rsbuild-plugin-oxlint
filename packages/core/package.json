@@ -1,8 +1,19 @@
 {
   "name": "rsbuild-plugin-lint",
   "version": "0.1.2",
-  "repository": "https://github.com/robertpanvip/rsbuild-plugin-lint.git",
+  "author": "pan",
   "license": "MIT",
+  "description": "Core plugin for Rsbuild lint plugins",
+  "keywords": ["rsbuild", "plugin", "lint"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/robertpanvip/rsbuild-plugin-lint.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/robertpanvip/rsbuild-plugin-lint/issues"
+  },
+  "homepage": "https://github.com/robertpanvip/rsbuild-plugin-lint",
   "type": "module",
   "exports": {
     ".": {
