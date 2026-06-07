@@ -60,7 +60,18 @@ jobs:
           for pkg in ${{ steps.changed.outputs.changed_packages }}; do
             echo "Publishing package: $pkg"
             cd packages/$pkg
-            npm version patch --no-git-tag-version
+            pkg_name=$(node -p "require('./package.json').name")
+            npm_latest=$(npm view "$pkg_name" version 2>/dev/null || echo "")
+            if [ -n "$npm_latest" ]; then
+              # Set to npm latest, then bump patch — guarantees higher than what's on npm
+              npm version --no-git-tag-version "$npm_latest"
+              npm version patch --no-git-tag-version
+            else
+              # Package not on npm yet, just bump local patch
+              npm version patch --no-git-tag-version
+            fi
+            new_version=$(node -p "require('./package.json').version")
+            echo "Publishing $pkg_name@$new_version"
             npm publish --access public --registry https://registry.npmjs.org/
             cd ../..
           done
