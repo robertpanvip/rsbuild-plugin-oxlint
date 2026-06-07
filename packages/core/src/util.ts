@@ -119,7 +119,7 @@ const runChild = ({
       logger.error(`${executeName} Error: ${error.message}`);
       reject(error);
     });
-    
+
     child.on('exit', (code) => {
       const output = bufferedOutput.join('\n');
       if (code === 0) {
