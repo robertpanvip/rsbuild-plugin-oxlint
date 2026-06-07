@@ -192,7 +192,6 @@ export const formateCodeFrame = (prefix: string, item: RsLintError) => {
       .map((line: string) => `  ${line}`)
       .join(os.EOL);
   }
-
   return {
     ...item,
     message: ` ${prefix} [${color.green(item.code)}] ${color.cyan(item.message)} ${color.cyan(item.help)}\n${frame}\n`,
