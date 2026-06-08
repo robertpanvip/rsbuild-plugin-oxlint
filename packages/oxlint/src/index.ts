@@ -94,8 +94,7 @@ const resolveAbsolutePath = (p: string): string =>
 
 const checkTsPluginInstalled = (logger: { warn: (msg: string) => void }): boolean => {
   try {
-    require.resolve('oxlint-tsgolint');
-    return true;
+    return existsSync(`./node_modules/oxlint-tsgolint`);
   } catch {
     return false;
   }
