@@ -132,4 +132,5 @@ export const linterPlugin = (options: Options = {}) => ({
   },
   name: 'rslint-plugin',
 });
+
 export default linterPlugin;
